@@ -5,7 +5,7 @@ services:
     region: frankfurt
     plan: free
     buildCommand: "pip install -r requirements/production.txt && python manage.py collectstatic --noinput"
-    startCommand: "python manage.py migrate && gunicorn config.wsgi:application"
+    startCommand: "bash start.sh"
     envVars:
       - key: PYTHON_VERSION
         value: 3.10.12
