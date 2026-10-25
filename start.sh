@@ -14,7 +14,6 @@ if db_url and not db_url.startswith('sqlite'):
         netloc = f'{user_pass}{new_hostname}{port_str}'
         new_url = urlparse.urlunparse((parsed.scheme, netloc, parsed.path, parsed.params, parsed.query, parsed.fragment))
         print(f'Patched DATABASE_URL hostname to FQDN: {new_hostname}')
-        # Write back to environment file for subsequent commands in this shell session
         with open('/tmp/db_url.env', 'w') as f:
             f.write(f'export DATABASE_URL=\"{new_url}\"\n')
 "
@@ -47,6 +46,23 @@ if db_url and not db_url.startswith('sqlite'):
 
 echo "Running database migrations..."
 python manage.py migrate --noinput
+
+echo "Ensuring default superuser exists..."
+python manage.py shell -c "
+import os
+from django.contrib.auth import get_user_model
+User = get_user_model()
+email = os.getenv('DJANGO_SUPERUSER_EMAIL', 'admin@brmfb.com')
+password = os.getenv('DJANGO_SUPERUSER_PASSWORD', 'AdminPassword123!')
+if not User.objects.filter(email=email).exists():
+    try:
+        User.objects.create_superuser(email=email, password=password)
+        print(f'Default superuser created successfully: {email}')
+    except Exception as e:
+        print(f'Could not create superuser: {e}')
+else:
+    print('Superuser already exists.')
+"
 
 echo "Starting Gunicorn server..."
 exec gunicorn config.wsgi:application

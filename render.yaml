@@ -23,6 +23,10 @@ services:
         fromDatabase:
           name: brmfb-db
           property: connectionString
+      - key: DJANGO_SUPERUSER_EMAIL
+        value: admin@brmfb.com
+      - key: DJANGO_SUPERUSER_PASSWORD
+        value: AdminPassword123!
 
 databases:
   - name: brmfb-db
