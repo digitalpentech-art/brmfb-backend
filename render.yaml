@@ -4,8 +4,8 @@ services:
     env: python
     region: frankfurt
     plan: free
-    buildCommand: "pip install -r requirements/production.txt && python manage.py collectstatic --noinput && python manage.py migrate"
-    startCommand: "gunicorn config.wsgi:application"
+    buildCommand: "pip install -r requirements/production.txt && python manage.py collectstatic --noinput"
+    startCommand: "python manage.py migrate && gunicorn config.wsgi:application"
     envVars:
       - key: PYTHON_VERSION
         value: 3.10.12
