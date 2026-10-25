@@ -1,0 +1,31 @@
+services:
+  - type: web
+    name: brmfb-backend
+    env: python
+    region: frankfurt
+    plan: free
+    buildCommand: "pip install -r requirements/production.txt && python manage.py collectstatic --noinput && python manage.py migrate"
+    startCommand: "gunicorn config.wsgi:application"
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.10.12
+      - key: DJANGO_SETTINGS_MODULE
+        value: config.settings.production
+      - key: SECRET_KEY
+        generateValue: true
+      - key: WEB_CONCURRENCY
+        value: 4
+      - key: ALLOWED_HOSTS
+        value: .onrender.com
+      - key: SECURE_SSL_REDIRECT
+        value: "True"
+      - key: DATABASE_URL
+        fromDatabase:
+          name: brmfb-db
+          property: connectionString
+
+databases:
+  - name: brmfb-db
+    databaseName: brmfb_db
+    user: brmfb_user
+    plan: free
