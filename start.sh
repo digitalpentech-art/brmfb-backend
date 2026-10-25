@@ -1,6 +1,28 @@
 #!/usr/bin/env bash
 set -e
 
+echo "Checking and patching database URL if needed..."
+python -c "
+import os, urllib.parse as urlparse
+db_url = os.environ.get('DATABASE_URL', '')
+if db_url and not db_url.startswith('sqlite'):
+    parsed = urlparse.urlparse(db_url)
+    if parsed.hostname and '.' not in parsed.hostname:
+        new_hostname = f'{parsed.hostname}.frankfurt-postgres.render.com'
+        user_pass = f'{parsed.username}:{parsed.password}@' if parsed.username else ''
+        port_str = f':{parsed.port}' if parsed.port else ':5432'
+        netloc = f'{user_pass}{new_hostname}{port_str}'
+        new_url = urlparse.urlunparse((parsed.scheme, netloc, parsed.path, parsed.params, parsed.query, parsed.fragment))
+        print(f'Patched DATABASE_URL hostname to FQDN: {new_hostname}')
+        # Write back to environment file for subsequent commands in this shell session
+        with open('/tmp/db_url.env', 'w') as f:
+            f.write(f'export DATABASE_URL=\"{new_url}\"\n')
+"
+
+if [ -f /tmp/db_url.env ]; then
+    source /tmp/db_url.env
+fi
+
 echo "Checking database connection..."
 python -c "
 import time, os, psycopg2
