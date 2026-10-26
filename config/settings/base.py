@@ -42,6 +42,7 @@ LOCAL_APPS = [
     'apps.payments',
     'apps.notifications',
     'apps.support',
+    'apps.analytics',
 ]
 
 AUTH_USER_MODEL = 'identity.User'
