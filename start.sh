@@ -54,9 +54,10 @@ from django.contrib.auth import get_user_model
 User = get_user_model()
 email = os.getenv('DJANGO_SUPERUSER_EMAIL', 'admin@brmfb.com')
 password = os.getenv('DJANGO_SUPERUSER_PASSWORD', 'AdminPassword123!')
+phone_number = os.getenv('DJANGO_SUPERUSER_PHONE_NUMBER', '+2348000000000')
 if not User.objects.filter(email=email).exists():
     try:
-        User.objects.create_superuser(email=email, password=password)
+        User.objects.create_superuser(email=email, phone_number=phone_number, password=password)
         print(f'Default superuser created successfully: {email}')
     except Exception as e:
         print(f'Could not create superuser: {e}')

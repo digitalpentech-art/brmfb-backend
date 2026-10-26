@@ -27,6 +27,8 @@ services:
         value: admin@brmfb.com
       - key: DJANGO_SUPERUSER_PASSWORD
         value: AdminPassword123!
+      - key: DJANGO_SUPERUSER_PHONE_NUMBER
+        value: "+2348000000000"
 
 databases:
   - name: brmfb-db

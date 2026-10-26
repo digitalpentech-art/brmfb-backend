@@ -17,7 +17,9 @@ class UserManager(BaseUserManager):
         user.save(using=self._db)
         return user
 
-    def create_superuser(self, email, phone_number, password=None, **extra_fields):
+    def create_superuser(self, email, phone_number=None, password=None, **extra_fields):
+        if not phone_number:
+            phone_number = extra_fields.pop('phone_number', '+2348000000000')
         extra_fields.setdefault('is_staff', True)
         extra_fields.setdefault('is_superuser', True)
         extra_fields.setdefault('is_active', True)
